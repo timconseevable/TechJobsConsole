@@ -17,7 +17,7 @@ namespace TechJobsConsole
         }
 
         /*
-         * Returns a list of all values contained in a given column,
+         * Returns a list of all values contained in a given COLUMN
          * without duplicates. 
          */
         public static List<string> FindAll(string column)
@@ -29,15 +29,44 @@ namespace TechJobsConsole
             foreach (Dictionary<string, string> job in AllJobs)
             {
                 string aValue = job[column];
-
-                if (!values.Contains(aValue))
+                string valuesLowString = string.Join(",", values.ToArray()).ToLower();
+                if ( !valuesLowString.Contains(aValue.ToLower()) )
                 {
-                    values.Add(aValue);
+                        values.Add(aValue);
                 }
             }
+            values.Sort();
             return values;
         }
 
+        /*
+         * Returns a list of jobs with VALUES 
+         * containing a given search term, without duplicates. 
+         */
+        //////////////////////////////////  CODE IN PROGRESS  ////////////////////////////////////////////
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            // load data, if not already loaded
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> job in AllJobs)
+            {
+                string jobString = string.Join(";", job).ToLower();
+                if (jobString.Contains(value))
+                {
+                    jobs.Add(job);
+                }
+            }
+
+            return jobs;
+        }
+
+        /*
+         * Returns a list of jobs within a specified COLUMN 
+         * containing a given search term, without duplicates. 
+         */
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
         {
             // load data, if not already loaded
@@ -47,14 +76,14 @@ namespace TechJobsConsole
 
             foreach (Dictionary<string, string> row in AllJobs)
             {
-                string aValue = row[column];
+                string aValue = row[column].ToLower();
 
                 if (aValue.Contains(value))
                 {
                     jobs.Add(row);
                 }
             }
-
+            //jobs.Sort();
             return jobs;
         }
 

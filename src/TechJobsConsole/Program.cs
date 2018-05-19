@@ -42,7 +42,7 @@ namespace TechJobsConsole
                     {
                         List<string> results = JobData.FindAll(columnChoice);
 
-                        Console.WriteLine("\n*** All " + columnChoices[columnChoice] + " Values ***");
+                        Console.WriteLine("\n\n*** All " + columnChoices[columnChoice] + " Values ***\n");
                         foreach (string item in results)
                         {
                             Console.WriteLine(item);
@@ -55,15 +55,16 @@ namespace TechJobsConsole
                     string columnChoice = GetUserSelection("Search", columnChoices);
 
                     // What is their search term?
-                    Console.WriteLine("\nSearch term: ");
-                    string searchTerm = Console.ReadLine();
+                    Console.Write("\nSearch term: ");
+                    string searchTerm = Console.ReadLine().ToLower();
 
                     List<Dictionary<string, string>> searchResults;
 
                     // Fetch results
                     if (columnChoice.Equals("all"))
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        searchResults = JobData.FindByValue(searchTerm);
+                        PrintJobs(searchResults);
                     }
                     else
                     {
@@ -79,7 +80,7 @@ namespace TechJobsConsole
          */
         private static string GetUserSelection(string choiceHeader, Dictionary<string, string> choices)
         {
-            int choiceIdx;
+            int choiceIdx = -1;
             bool isValidChoice = false;
             string[] choiceKeys = new string[choices.Count];
 
@@ -92,7 +93,7 @@ namespace TechJobsConsole
 
             do
             {
-                Console.WriteLine("\n" + choiceHeader + " by:");
+                Console.WriteLine("\n\n" + choiceHeader + " by:");
 
                 for (int j = 0; j < choiceKeys.Length; j++)
                 {
@@ -100,15 +101,22 @@ namespace TechJobsConsole
                 }
 
                 string input = Console.ReadLine();
-                choiceIdx = int.Parse(input);
-
-                if (choiceIdx < 0 || choiceIdx >= choiceKeys.Length)
+                if (!IsDigitsOnly(input))
                 {
-                    Console.WriteLine("Invalid choices. Try again.");
+                    Console.WriteLine("Invalid choice. Try again.");
                 }
                 else
                 {
-                    isValidChoice = true;
+                    choiceIdx = int.Parse(input);
+
+                    if (choiceIdx < 0 || choiceIdx >= choiceKeys.Length)
+                    {
+                        Console.WriteLine("Invalid choice. Try again.");
+                    }
+                    else
+                    {
+                        isValidChoice = true;
+                    }
                 }
 
             } while (!isValidChoice);
@@ -118,7 +126,28 @@ namespace TechJobsConsole
 
         private static void PrintJobs(List<Dictionary<string, string>> someJobs)
         {
-            Console.WriteLine("printJobs is not implemented yet");
+            if (someJobs.Count == 0)
+            {
+                Console.WriteLine("there are no results for your search");
+            }
+            else
+            {
+                foreach (Dictionary<string, string> job in someJobs)
+                {
+                    Console.WriteLine("\n------");
+                    foreach (KeyValuePair<string, string> entry in job)
+                    {
+                        Console.WriteLine("{0}: {1}", entry.Key, entry.Value);
+                    }
+                }
+            }
+        }
+
+        public static bool IsDigitsOnly(string str)
+        {
+            if (string.IsNullOrEmpty(str))  { return false; }
+            foreach (char c in str)  { if (!char.IsDigit(c))  { return false; }  }
+            return true;
         }
     }
 }
